@@ -1,14 +1,16 @@
 // File: create-token.js
-import * as web3 from '@solana/web3.js';
-import * as splToken from '@solana/spl-token';
+import { Connection, Keypair, PublicKey, clusterApiUrl, sendAndConfirmTransaction, Transaction } from '@solana/web3.js';
+import { createMint, getOrCreateAssociatedTokenAccount, mintTo } from '@solana/spl-token';
 import bs58 from 'bs58';
-import * as mplTokenMetadata from '@metaplex-foundation/mpl-token-metadata';
-import readline from 'readline';
+import { createInterface } from 'readline';
+import { promisify } from 'util';
 
-const rl = readline.createInterface({
+const rl = createInterface({
   input: process.stdin,
   output: process.stdout
 });
+
+const question = promisify(rl.question).bind(rl);
 
 // Token details
 const TOKEN_NAME = "ClickScore";
@@ -47,19 +49,25 @@ function createKeypairFromSecretKey(secretKeyString) {
     secretKey = fullSecretKey;
   }
 
-  return web3.Keypair.fromSecretKey(secretKey);
+  const keypair = Keypair.fromSecretKey(secretKey);
+  console.log("Keypair created successfully. Public key:", keypair.publicKey.toBase58());
+  return keypair;
 }
 
 async function createToken(secretKeyString) {
   try {
+    console.log("Creating wallet from secret key...");
     const fromWallet = createKeypairFromSecretKey(secretKeyString);
+    if (!fromWallet || !fromWallet.publicKey) {
+      throw new Error("Failed to create wallet. Invalid keypair.");
+    }
     console.log("Wallet public key:", fromWallet.publicKey.toBase58());
 
-    const connection = new web3.Connection(web3.clusterApiUrl('devnet'), 'confirmed');
+    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
     console.log("Connected to devnet");
 
     console.log("Creating token mint...");
-    const mint = await splToken.createMint(
+    const mint = await createMint(
       connection,
       fromWallet,
       fromWallet.publicKey,
@@ -69,7 +77,7 @@ async function createToken(secretKeyString) {
     console.log("Token mint created:", mint.toBase58());
 
     console.log("Getting or creating token account...");
-    const fromTokenAccount = await splToken.getOrCreateAssociatedTokenAccount(
+    const fromTokenAccount = await getOrCreateAssociatedTokenAccount(
       connection,
       fromWallet,
       mint,
@@ -78,7 +86,7 @@ async function createToken(secretKeyString) {
     console.log("Token account:", fromTokenAccount.address.toBase58());
 
     console.log("Minting tokens...");
-    const signature = await splToken.mintTo(
+    const signature = await mintTo(
       connection,
       fromWallet,
       mint,
@@ -88,44 +96,7 @@ async function createToken(secretKeyString) {
     );
     console.log("Minting signature:", signature);
 
-    console.log("Creating metadata...");
-    const METADATA_PROGRAM_ID = new web3.PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
-    const metadataPDA = web3.PublicKey.findProgramAddressSync(
-      [Buffer.from("metadata"), METADATA_PROGRAM_ID.toBuffer(), mint.toBuffer()],
-      METADATA_PROGRAM_ID
-    )[0];
-
-    const tokenMetadata = {
-      name: TOKEN_NAME,
-      symbol: TOKEN_SYMBOL,
-      uri: "https://github.com/esansalari/solana-token-project-devnet",
-      sellerFeeBasisPoints: 0,
-      creators: null,
-      collection: null,
-      uses: null
-    };
-
-    const instruction = mplTokenMetadata.createCreateMetadataAccountV3Instruction(
-      {
-        metadata: metadataPDA,
-        mint: mint,
-        mintAuthority: fromWallet.publicKey,
-        payer: fromWallet.publicKey,
-        updateAuthority: fromWallet.publicKey,
-      },
-      {
-        createMetadataAccountArgsV3: {
-          data: tokenMetadata,
-          isMutable: true,
-          collectionDetails: null
-        }
-      }
-    );
-
-    const transaction = new web3.Transaction().add(instruction);
-    const metadataSignature = await web3.sendAndConfirmTransaction(connection, transaction, [fromWallet]);
-    console.log("Metadata created:", metadataSignature);
-
+    console.log("Token creation process completed successfully.");
     console.log('Token Mint Address:', mint.toBase58());
     console.log('Token Account Address:', fromTokenAccount.address.toBase58());
 
@@ -140,6 +111,15 @@ async function createToken(secretKeyString) {
   }
 }
 
-rl.question('Please enter your wallet secret key: ', (secretKey) => {
-  createToken(secretKey.trim()).then(() => rl.close());
-});
+async function main() {
+  try {
+    const secretKey = await question('Please enter your wallet secret key: ');
+    await createToken(secretKey.trim());
+  } catch (error) {
+    console.error("An error occurred in the main function:", error);
+  } finally {
+    rl.close();
+  }
+}
+
+main().catch(console.error);

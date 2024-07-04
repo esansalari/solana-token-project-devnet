@@ -1,6 +1,6 @@
 {
-    "name": "ClickScore",
-    "symbol": "CLS",
-    "description": "ClickScore token on Solana devnet",
-    "image": "images/ClickScore_Pinky.png"
-  }
+  "name": "ClickScore",
+  "symbol": "CLS",
+  "description": "ClickScore token on Solana devnet",
+  "image": "https://raw.githubusercontent.com/esansalari/solana-token-project-devnet/main/images/ClickScore_Pinky.png"
+}

@@ -98,7 +98,7 @@ async function createToken(secretKeyString) {
     const tokenMetadata = {
       name: TOKEN_NAME,
       symbol: TOKEN_SYMBOL,
-      uri: "https://raw.githubusercontent.com/your-username/your-repo/main/token-metadata.json",
+      uri: "https://github.com/esansalari/solana-token-project-devnet",
       sellerFeeBasisPoints: 0,
       creators: null,
       collection: null,

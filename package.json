@@ -1,0 +1,24 @@
+{
+  "name": "solana-token-project",
+  "version": "1.0.0",
+  "description": "A project to create and manage Solana tokens",
+  "main": "create-token.js",
+  "type": "module",
+  "scripts": {
+    "start": "node create-token.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "solana",
+    "token",
+    "blockchain"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@metaplex-foundation/mpl-token-metadata": "^3.2.1",
+    "@solana/spl-token": "^0.4.7",
+    "@solana/web3.js": "^1.94.0",
+    "bs58": "^6.0.0"
+  }
+}

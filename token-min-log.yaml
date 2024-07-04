@@ -1,0 +1,16 @@
+Creating wallet from secret key...
+Received secret key string length: 87
+Successfully decoded as base58. Decoded length: 64
+Keypair created successfully. Public key: HqbK36VWWDJDeFagZAZDdoutS8PDMXYkmqzgK1tvKz2Y
+Wallet public key: HqbK36VWWDJDeFagZAZDdoutS8PDMXYkmqzgK1tvKz2Y
+Connected to devnet
+Creating token mint...
+Token mint created: H1vvuS8mPpFizSNnsuFkcfo51uf5rSoso5wGM86KqoN
+Getting or creating token account...
+Token account: 71AfGtJ1xTSZcme69bXiVgkX1PMELCqEici89vgZKrTy
+Minting tokens...
+Minting signature: tBPUn3Qayw2V2jcMhHRTKAQDZaJHuRSJdr4RoqfQPVBgRzpQakLXKzDfMMgqppDiN5WZGSNF8dvwnhZLvzkZXN5
+Token creation process completed successfully.
+Token Mint Address: H1vvuS8mPpFizSNnsuFkcfo51uf5rSoso5wGM86KqoN
+Token Account Address: 71AfGtJ1xTSZcme69bXiVgkX1PMELCqEici89vgZKrTy
+Token Balance: 10000000000
